@@ -22,6 +22,18 @@
 *	For more info on custom blueprint nodes visit documentation:
 *	https://wiki.unrealengine.com/Custom_Blueprint_Node_Creation
 */
+
+class UFactory;
+
+class UMaterial;
+
+class UMaterialExpressionTextureSampleParameter2D;
+class UMaterialExpressionParameter;
+class UMaterialExpressionScalarParameter;
+class UMaterialExpressionVectorParameter;
+class UMaterialExpressionMultiply;
+class UMaterialExpressionTextureCoordinate;
+
 UCLASS()
 class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 {
@@ -29,4 +41,140 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Execute Sample function", Keywords = "Midterial sample test testing"), Category = "MidterialTesting")
 	static float MidterialSampleFunction(float Param);
-};
+
+	/**
+	* Create an asset.
+	* 
+	* Sourced from https://www.youtube.com/watch?v=oFp3MKu4MoY
+	* 
+	* @param AssetPath			The path of where to create the asset: "/Game/Folder/MyAsset"
+	* @param AssetClass			The class of the asset to create
+	* @param AssetFactory		Optional. The factory to use to create the asset
+	* @param bOutSuccess		If the action was a success or not
+	* @param OutInfoMessage		More information about the action's result
+	* 
+	* @return The created asset
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Midterial")
+	static UObject* CreateAsset(FString AssetPath, UClass* AssetClass, UFactory* AssetFactory, bool& bOutSuccess,
+		FString& OutInfoMessage);
+
+	/**
+	* Create a Material asset.
+	* 
+	* @param AssetPath			The path of where to create the asset: "/Game/Folder/MyAsset"
+	* @param bOutSuccess		If the action was a success or not
+	* @param OutInfoMessage		More information about the action's result
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Midterial")
+		static UMaterial* CreateMaterialAsset(FString AssetPath, bool& bOutSuccess, FString& OutInfoMessage);
+
+	/**
+	* Build a material graph with the provided values
+	* 
+	* Sourced from https://www.youtube.com/watch?v=Fd56hSN83mk
+	* 
+	* @param MaterialPath		The path of the material: "/Game/Folder/MyMaterial"
+	* @param TexturePath		The path of the texture to add in the material: "/Game/Folder/MyTexture"
+	* @param TexCoord			Texture coordinates for the texture
+	* @param Color				Color that will be multiplied by the texture
+	* @param Metallic			Metallic value of the material
+	* @param Specular			Specular value of the material
+	* @param Roughness			Roughness value of the material
+	* @param bOutSuccess		If the action was a success or not
+	* @param OutInfoMessage		More information about the action's result
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Midterial")
+		static void BuildMaterial(FString MaterialPath, FString TexturePath, FVector2D TexCoord, FLinearColor Color, 
+			float Metallic, float Specular, float Roughness, bool& bOutSuccess, FString& OutInfoMessage);
+
+	/**
+	* Retrieve an existing material expression based on the provided name or description
+	* 
+	* Sourced from https://www.youtube.com/watch?v=Fd56hSN83mk
+	* 
+	* @param Material				The material in which the expression is
+	* @param NameOrDescription		The name or description of the expression to find
+	* 
+	* @return The expression
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Midterial")
+		static UMaterialExpression* GetExistingMaterialExpressionFromName(UMaterial* Material, FString NameOrDescription);
+
+	/**
+	* Add a texture parameter to a material graph
+	* 
+	* Sourced from https://www.youtube.com/watch?v=Fd56hSN83mk
+	* 
+	* @param Material			The material in which to add the parameter
+	* @param Texture			The texture to use
+	* @param ParameterName		The name of the expression
+	* @param NodePos			The XY coordinates of the node in the graph
+	* 
+	* @return The expression
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Midterial")
+		static UMaterialExpressionTextureSampleParameter2D* AddTextureParameter(UMaterial* Material, UTexture* Texture, 
+			FString ParameterName, FIntPoint NodePos);
+	/**
+	* Add a scalar parameter to a material graph
+	* 
+	* Sourced from https://www.youtube.com/watch?v=Fd56hSN83mk
+	* 
+	* @param Material			The material in which to add the parameter
+	* @param Value				The float value to use
+	* @param ParameterName		The name of the expression
+	* @param NodePos			The XY coordinates of the node in the graph
+	* 
+	* @return The expression
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Midterial")
+		static UMaterialExpressionScalarParameter* AddScalarParameter(UMaterial* Material, float Value, FString ParameterName,
+			FIntPoint NodePos);
+	/**
+	* Add a vector parameter to a material graph
+	* 
+	* Sourced from https://www.youtube.com/watch?v=Fd56hSN83mk
+	* 
+	* @param Material			The material in which to add the parameter
+	* @param Color				The color value to use
+	* @param ParameterName		The name of the expression
+	* @param NodePos			The XY coordinates of the node in the graph
+	* 
+	* @return The expression
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Midterial")
+		static UMaterialExpressionVectorParameter* AddVectorParameter(UMaterial* Material, FLinearColor Color,
+			FString ParameterName, FIntPoint NodePos);
+
+	/**
+	* Add a multiply expression to a material graph
+	* 
+	* Sourced from https://www.youtube.com/watch?v=Fd56hSN83mk
+	* 
+	* @param Material			The material in which to add the expression
+	* @param ExpressionDesc		The description of the expression
+	* @param NodePos			The XY coordinates of the node in the graph
+	* 
+	* @return The expression
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Midterial")
+		static UMaterialExpressionMultiply* AddMultiplyExpression(UMaterial* Material, FString ExpressionDesc,
+			FIntPoint NodePos);
+	
+	/**
+	* Add a texture coordinate expression to a material graph
+	* 
+	* Sourced from https://www.youtube.com/watch?v=Fd56hSN83mk
+	* 
+	* @param Material			The material in which to add the expression
+	* @param Value				The texture coordinates value to use
+	* @param ExpressionDesc		The description of the expression
+	* @param NodePos			The XY coordinates of the node in the graph
+	* 
+	* @return The expression
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Midterial")
+		static UMaterialExpressionTextureCoordinate* AddTexCoordExpression(UMaterial* Material, FVector2D Value,
+			FString ExpressionDesc, FIntPoint NodePos);
+}
