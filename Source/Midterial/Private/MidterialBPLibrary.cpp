@@ -15,11 +15,11 @@
 #include "Materials/MaterialExpressionMultiply.h" // Engine
 #include "Materials/MaterialExpressionTextureCoordinate.h" // Engine
 
-//UMidterialBPLibrary::UMidterialBPLibrary(const FObjectInitializer& ObjectInitializer)
-//: Super(ObjectInitializer)
-//{
-//
-//}
+UMidterialBPLibrary::UMidterialBPLibrary(const FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer)
+{
+
+}
 
 float UMidterialBPLibrary::MidterialSampleFunction(float Param)
 {

@@ -175,6 +175,5 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 	* @return The expression
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Midterial")
-		static UMaterialExpressionTextureCoordinate* AddTexCoordExpression(UMaterial* Material, FVector2D Value,
-			FString ExpressionDesc, FIntPoint NodePos);
-}
+		static UMaterialExpressionTextureCoordinate* AddTexCoordExpression(UMaterial* Material, FVector2D Value, FString ExpressionDesc, FIntPoint NodePos);
+};
