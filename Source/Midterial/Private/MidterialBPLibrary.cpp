@@ -1,19 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "MidterialBPLibrary.h"
-#include "Midterial.h"
-
-#include "AssetToolsModule.h" // AssetTools
-#include "Materials/Material.h" // Engine
-
-#include "Factories/MaterialFactoryNew.h" // UnrealEd
-
-#include "MaterialEditingLibrary.h" // MaterialEditor
-#include "Materials/MaterialExpressionTextureSampleParameter2D.h" // Engine
-#include "Materials/MaterialExpressionScalarParameter.h" // Engine
-#include "Materials/MaterialExpressionVectorParameter.h" // Engine
-#include "Materials/MaterialExpressionMultiply.h" // Engine
-#include "Materials/MaterialExpressionTextureCoordinate.h" // Engine
 
 UMidterialBPLibrary::UMidterialBPLibrary(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
