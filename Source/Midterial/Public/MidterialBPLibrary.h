@@ -39,9 +39,6 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_UCLASS_BODY()
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Execute Sample function", Keywords = "Midterial sample test testing"), Category = "MidterialTesting")
-	static float MidterialSampleFunction(float Param);
-
 	/**
 	* Create an asset.
 	* 

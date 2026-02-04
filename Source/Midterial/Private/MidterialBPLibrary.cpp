@@ -21,11 +21,6 @@ UMidterialBPLibrary::UMidterialBPLibrary(const FObjectInitializer& ObjectInitial
 
 }
 
-float UMidterialBPLibrary::MidterialSampleFunction(float Param)
-{
-	return -1;
-}
-
 UObject* UMidterialBPLibrary::CreateAsset(FString AssetPath, UClass* AssetClass, UFactory* AssetFactory, bool& bOutSuccess, FString& OutInfoMessage)
 {
 	// Get the asset tools module
