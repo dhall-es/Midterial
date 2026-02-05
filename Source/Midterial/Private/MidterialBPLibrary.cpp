@@ -156,7 +156,44 @@ UMaterialExpressionTextureSampleParameter2D* UMidterialBPLibrary::AddTexturePara
 
 	// Set value
 	TextureParameter->Texture = Texture;
-	TextureParameter->SamplerType = SAMPLERTYPE_Color;
+	
+
+	switch (Texture->CompressionSettings)
+	{
+	case TC_Normalmap:
+		TextureParameter->SamplerType = SAMPLERTYPE_Normal;
+		break;
+
+	case TC_Masks:
+		TextureParameter->SamplerType = SAMPLERTYPE_Masks;
+		break;
+
+	case TC_Grayscale:
+		if (Texture->SRGB)
+		{
+			TextureParameter->SamplerType = SAMPLERTYPE_Grayscale;
+			break;
+		}
+		TextureParameter->SamplerType = SAMPLERTYPE_LinearGrayscale;
+		break;
+
+	case TC_Alpha:
+		TextureParameter->SamplerType = SAMPLERTYPE_Alpha;
+		break;
+
+	case TC_DistanceFieldFont:
+		TextureParameter->SamplerType = SAMPLERTYPE_DistanceFieldFont;
+		break;
+
+	default:
+		if (Texture->SRGB)
+		{
+			TextureParameter->SamplerType = SAMPLERTYPE_Color;
+			break;
+		}
+		TextureParameter->SamplerType = SAMPLERTYPE_LinearColor;
+		break;
+	}
 
 	// Return parameter
 	return TextureParameter;
