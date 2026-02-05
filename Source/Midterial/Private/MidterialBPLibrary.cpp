@@ -66,12 +66,11 @@ UMaterial* UMidterialBPLibrary::CreateMaterialAsset(FString AssetPath, bool& bOu
 	return Cast<UMaterial>(Asset);
 }
 
-void UMidterialBPLibrary::BuildMaterial(FString MaterialPath, FString TexturePath, FVector2D TexCoord, FLinearColor Color, 
+void UMidterialBPLibrary::BuildMaterialSingleTexture(FString MaterialPath, UTexture* Texture, FVector2D TexCoord, FLinearColor Color,
 	float Metallic, float Specular, float Roughness, bool& bOutSuccess, FString& OutInfoMessage)
 {
 	// Get material and texture
 	UMaterial* Material = Cast<UMaterial>(StaticLoadObject(UObject::StaticClass(), nullptr, *MaterialPath));
-	UTexture* Texture = Cast<UTexture>(StaticLoadObject(UObject::StaticClass(), nullptr, *TexturePath));
 
 	// Create material if it doesn't exist
 	if (Material == nullptr)
@@ -302,5 +301,75 @@ UMaterialExpressionTextureCoordinate* UMidterialBPLibrary::AddTexCoordExpression
 
 	// Return parameter
 	return TextureCoordinateExpression;
+}
+
+void UMidterialBPLibrary::BuildMaterialMultiTexture(FString MaterialPath, TArray<UObject*> Textures, bool& bOutSuccess, FString& OutInfoMessage)
+{
+	//// Get material and texture
+	//UMaterial* Material = Cast<UMaterial>(StaticLoadObject(UObject::StaticClass(), nullptr, *MaterialPath));
+
+	//// Create material if it doesn't exist
+	//if (Material == nullptr)
+	//{
+	//	Material = CreateMaterialAsset(MaterialPath, bOutSuccess, OutInfoMessage);
+
+	//	// If material creation fails, just return
+	//	if (Material == nullptr)
+	//	{
+	//		return;
+	//	}
+
+	//	
+	//}
+	
+	UTexture* BaseColorTex {};
+	UTexture* NormalTex {};
+	UTexture* ORMTex {};
+
+	UTexture* AmbientOcclusionTex {};
+	UTexture* RoughnessTex {};
+	UTexture* MetallicTex {};
+
+	for (auto& oTex : Textures)
+	{
+		if (oTex->IsA(UTexture::StaticClass()) == false)
+		{
+			continue;
+		}
+		FString Name = oTex->GetName();
+		UTexture* tTex = Cast<UTexture>(oTex);
+
+		if (Name.Contains(TEXT("basecolor"), ESearchCase::IgnoreCase, ESearchDir::FromEnd))
+		{
+			BaseColorTex = tTex;
+		}
+		else if (Name.Contains(TEXT("normal"), ESearchCase::IgnoreCase, ESearchDir::FromEnd))
+		{
+			NormalTex = tTex;
+		}
+		else if (Name.Contains(TEXT("ambientocclusion"), ESearchCase::IgnoreCase, ESearchDir::FromEnd))
+		{
+			AmbientOcclusionTex = tTex;
+		}
+		else if (Name.Contains(TEXT("roughness"), ESearchCase::IgnoreCase, ESearchDir::FromEnd))
+		{
+			RoughnessTex = tTex;
+		}
+		else if (Name.Contains(TEXT("metallic"), ESearchCase::IgnoreCase, ESearchDir::FromEnd))
+		{
+			MetallicTex = tTex;
+		}
+		// Check ORM last since "normal" contains "orm"
+		else if (Name.Contains(TEXT("orm"), ESearchCase::IgnoreCase, ESearchDir::FromEnd))
+		{
+			// Double-check the texture isn't a normal map, skip if it is
+			if (tTex->CompressionSettings == TC_Normalmap)
+			{
+				continue;
+			}
+
+			ORMTex = tTex;
+		}
+	}
 }
 

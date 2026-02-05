@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 #include "Midterial.h"
 
@@ -97,7 +98,7 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 	* @param OutInfoMessage		More information about the action's result
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Midterial")
-		static void BuildMaterial(FString MaterialPath, FString TexturePath, FVector2D TexCoord, FLinearColor Color, 
+		static void BuildMaterialSingleTexture(FString MaterialPath, UTexture* Texture, FVector2D TexCoord, FLinearColor Color,
 			float Metallic, float Specular, float Roughness, bool& bOutSuccess, FString& OutInfoMessage);
 
 	/**
@@ -188,4 +189,8 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Midterial")
 		static UMaterialExpressionTextureCoordinate* AddTexCoordExpression(UMaterial* Material, FVector2D Value, FString ExpressionDesc, FIntPoint NodePos);
+
+	
+	UFUNCTION(BlueprintCallable, Category = "Midterial/Testing")
+		static void BuildMaterialMultiTexture(FString MaterialPath, TArray<UObject*> Textures, bool& bOutSuccess, FString& OutInfoMessage);
 };
