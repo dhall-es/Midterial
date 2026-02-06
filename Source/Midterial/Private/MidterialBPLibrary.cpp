@@ -66,6 +66,15 @@ UMaterial* UMidterialBPLibrary::CreateMaterialAsset(FString AssetPath, bool& bOu
 	return Cast<UMaterial>(Asset);
 }
 
+UMaterialInstanceConstant* UMidterialBPLibrary::CreateMaterialInstanceAsset(FString AssetPath, UMaterialInterface* InitialParent, bool& bOutSuccess, FString& OutInfoMessage)
+{
+	UMaterialInstanceConstantFactoryNew* Factory = NewObject< UMaterialInstanceConstantFactoryNew>();
+	Factory->InitialParent = InitialParent;
+
+	UObject* Asset = CreateAsset(AssetPath, UMaterialInstanceConstant::StaticClass(), Factory, bOutSuccess, OutInfoMessage);
+	return Cast<UMaterialInstanceConstant>(Asset);
+}
+
 void UMidterialBPLibrary::BuildMaterialSingleTexture(FString MaterialPath, UTexture* Texture, FVector2D TexCoord, FLinearColor Color,
 	float Metallic, float Specular, float Roughness, bool& bOutSuccess, FString& OutInfoMessage)
 {
@@ -301,6 +310,48 @@ UMaterialExpressionTextureCoordinate* UMidterialBPLibrary::AddTexCoordExpression
 
 	// Return parameter
 	return TextureCoordinateExpression;
+}
+
+void UMidterialBPLibrary::BuildMaterialInstance(FString MaterialInstancePath, UMaterial* InitialParent, TArray<UObject*> Textures, bool& bOutSuccess, FString& OutInfoMessage)
+{
+	UMaterialInstanceConstant* MaterialInst = CreateMaterialInstanceAsset(MaterialInstancePath, InitialParent, bOutSuccess, OutInfoMessage);
+
+	/*FString PathName{}, Left{}, Right{};
+	PathName = InitialParent->GetPathName(nullptr);
+
+	if (PathName.Split(TEXT("/"), &Left, &Right, ESearchCase::CaseSensitive, ESearchDir::FromEnd))
+	{
+		OutInfoMessage = Right;
+	}*/
+	TMap<FMaterialParameterInfo, FMaterialParameterMetadata> TextureParamMap {};
+	MaterialInst->GetAllParametersOfType(EMaterialParameterType::Texture, TextureParamMap);
+
+	for (auto& ParamPair : TextureParamMap)
+	{
+		FString ParamName = ParamPair.Key.Name.ToString();
+		UTexture* MatchingTexture {};
+
+		for (auto& oTex : Textures)
+		{
+			if (oTex->IsA(UTexture::StaticClass()) == false)
+			{
+				continue;
+			}
+
+			FString TexName{};
+			oTex->GetName().Split(FString(TEXT("_")), nullptr, &TexName, ESearchCase::CaseSensitive, ESearchDir::FromEnd);
+
+			if (TexName.Equals(ParamName, ESearchCase::IgnoreCase))
+			{
+				MatchingTexture = Cast<UTexture>(oTex);
+			}
+		}
+
+		if (MatchingTexture != nullptr)
+		{
+			MaterialInst->SetTextureParameterValueEditorOnly(ParamPair.Key, MatchingTexture);
+		}
+	}
 }
 
 void UMidterialBPLibrary::BuildMaterialMultiTexture(FString MaterialPath, TArray<UObject*> Textures, bool& bOutSuccess, FString& OutInfoMessage)

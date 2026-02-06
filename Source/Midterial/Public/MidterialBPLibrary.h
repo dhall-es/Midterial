@@ -9,8 +9,10 @@
 
 #include "AssetToolsModule.h" // AssetTools
 #include "Materials/Material.h" // Engine
+#include "Materials/MaterialInstanceConstant.h" // Engine	
 
 #include "Factories/MaterialFactoryNew.h" // UnrealEd
+#include "Factories/MaterialInstanceConstantFactoryNew.h" // UnrealEd
 
 #include "MaterialEditingLibrary.h" // MaterialEditor
 #include "Materials/MaterialExpressionTextureSampleParameter2D.h" // Engine
@@ -68,7 +70,7 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 	* 
 	* @return The created asset
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Midterial")
+	UFUNCTION(BlueprintCallable, Category = "Midterial|Assets")
 	static UObject* CreateAsset(FString AssetPath, UClass* AssetClass, UFactory* AssetFactory, bool& bOutSuccess,
 		FString& OutInfoMessage);
 
@@ -79,9 +81,11 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 	* @param bOutSuccess		If the action was a success or not
 	* @param OutInfoMessage		More information about the action's result
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Midterial")
+	UFUNCTION(BlueprintCallable, Category = "Midterial|Assets")
 		static UMaterial* CreateMaterialAsset(FString AssetPath, bool& bOutSuccess, FString& OutInfoMessage);
 
+	UFUNCTION(BlueprintCallable, Category = "Midterial|Assets")
+	static UMaterialInstanceConstant* CreateMaterialInstanceAsset(FString AssetPath, UMaterialInterface* InitialParent, bool& bOutSuccess, FString& OutInfoMessage);
 	/**
 	* Build a material graph with the provided values
 	* 
@@ -190,7 +194,11 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "Midterial")
 		static UMaterialExpressionTextureCoordinate* AddTexCoordExpression(UMaterial* Material, FVector2D Value, FString ExpressionDesc, FIntPoint NodePos);
 
-	
+	UFUNCTION(BlueprintCallable, Category = "Midterial/Testing")
+		static void BuildMaterialInstance(FString MaterialInstancePath, UMaterial* InitialParent, TArray<UObject*> Textures,
+			bool& bOutSuccess, FString& OutInfoMessage);
+
+
 	UFUNCTION(BlueprintCallable, Category = "Midterial/Testing")
 		static void BuildMaterialMultiTexture(FString MaterialPath, TArray<UObject*> Textures, bool& bOutSuccess, FString& OutInfoMessage);
 };
