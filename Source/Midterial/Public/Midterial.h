@@ -4,6 +4,14 @@
 
 #include "Modules/ModuleManager.h"
 
+#include "LevelEditor.h"
+#include "Widgets/Docking/SDockTab.h"
+#include "Widgets/Layout/SBox.h"
+#include "Widgets/Text/STextBlock.h"
+#include "ToolMenus.h"
+
+#include "PropertyCustomizationHelpers.h"
+
 class FMidterialModule : public IModuleInterface
 {
 public:
@@ -11,4 +19,9 @@ public:
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
+
+	static void InvokeMidterialWindow();
+
+private:
+	TSharedRef<class SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
 };

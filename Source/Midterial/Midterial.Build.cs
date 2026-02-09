@@ -42,6 +42,8 @@ public class Midterial : ModuleRules
 				"AssetTools",
 				"UnrealEd",
 				"MaterialEditor",
+				"EditorWidgets",
+				"PropertyEditor"
 			}
 			);
 		

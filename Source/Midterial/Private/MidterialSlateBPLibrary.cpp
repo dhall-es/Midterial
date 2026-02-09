@@ -5,18 +5,20 @@
 
 void UMidterialSlateBPLibrary::ShowMidterialSlate()
 {
-	TSharedRef<SVerticalBox> windowContent = SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		[
-			SNew(SImage)
-		]
-		+ SVerticalBox::Slot()
-		[
-			SNew(STextBlock)
-				.Text(FText::FromString("Hello"))
-		];
+	//TSharedRef<SVerticalBox> windowContent = SNew(SVerticalBox)
+	//	+ SVerticalBox::Slot()
+	//	[
+	//		SNew(SAssetDropTarget)
+	//	]
+	//	+ SVerticalBox::Slot()
+	//	[
+	//		SNew(STextBlock)
+	//			.Text(FText::FromString("Hello"))
+	//	];
 
-	TSharedRef<SWindow> window = SNew(SWindow);
-	window->SetContent(windowContent);
-	FSlateApplication::Get().AddWindow(window);
+	//TSharedRef<SWindow> window = SNew(SWindow);
+	//window->SetContent(windowContent);
+	//FSlateApplication::Get().AddWindow(window);
+	UE_LOG(LogTemp, Warning, TEXT("Received command Show Midterial Slate"))
+	FMidterialModule::InvokeMidterialWindow();
 }
