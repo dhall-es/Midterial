@@ -11,6 +11,7 @@
 #include "ToolMenus.h"
 
 #include "PropertyCustomizationHelpers.h"
+#include "SMidterialWidgetMI.h"
 
 class FMidterialModule : public IModuleInterface
 {

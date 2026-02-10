@@ -26,17 +26,11 @@ void FMidterialModule::InvokeMidterialWindow()
 
 TSharedRef<SDockTab> FMidterialModule::OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs)
 {
-	FText WidgetText = FText(LOCTEXT("WindowWidgetText", "Placeholder"));
-
 	return SNew(SDockTab)
+		.ShouldAutosize(true)
 		.TabRole(ETabRole::NomadTab)
 		[
-			SNew(SBox)
-				.HAlign(HAlign_Center)
-				.VAlign(VAlign_Center)
-				[
-					SNew(SObjectPropertyEntryBox)
-				]
+			SNew(SMidterialWidgetMI)
 		];
 }
 
