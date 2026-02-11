@@ -10,6 +10,8 @@
 #include "Widgets/SWindow.h"
 #include "Editor/EditorWidgets/Public/SAssetDropTarget.h"
 
+#include "SMidterialWidgetMI.h"
+
 #include "MidterialSlateBPLibrary.generated.h"
 
 UCLASS()
@@ -20,5 +22,5 @@ class UMidterialSlateBPLibrary : public UBlueprintFunctionLibrary
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Midterial|Slate")
-	static void ShowMidterialSlate();
+	static void LoadMidterialMIWindow(TArray<UObject*> Textures);
 };

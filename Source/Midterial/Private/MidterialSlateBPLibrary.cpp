@@ -3,22 +3,25 @@
 
 #include "MidterialSlateBPLibrary.h"
 
-void UMidterialSlateBPLibrary::ShowMidterialSlate()
+void UMidterialSlateBPLibrary::LoadMidterialMIWindow(TArray<UObject*> Textures)
 {
-	//TSharedRef<SVerticalBox> windowContent = SNew(SVerticalBox)
-	//	+ SVerticalBox::Slot()
-	//	[
-	//		SNew(SAssetDropTarget)
-	//	]
-	//	+ SVerticalBox::Slot()
-	//	[
-	//		SNew(STextBlock)
-	//			.Text(FText::FromString("Hello"))
-	//	];
+	TSharedRef<SMidterialWidgetMI> widget = SNew(SMidterialWidgetMI);
+	for (auto& oTex : Textures)
+	{
+		if (oTex->IsA(UTexture::StaticClass()) == false)
+		{
+			continue;
+		}
 
-	//TSharedRef<SWindow> window = SNew(SWindow);
-	//window->SetContent(windowContent);
-	//FSlateApplication::Get().AddWindow(window);
-	UE_LOG(LogTemp, Warning, TEXT("Received command Show Midterial Slate"))
-	FMidterialModule::InvokeMidterialWindow();
+		widget->AddListItem(MakeShareable(new FString(oTex->GetPathName())));
+	}
+
+	TSharedRef<SWindow> window = SNew(SWindow)
+		.MinWidth(400.0f)
+		.MinHeight(200.0f)
+		.IsTopmostWindow(true)
+		.Title(FText::FromString("Auto-Create Material Instance"));
+
+	window->SetContent(widget);
+	FSlateApplication::Get().AddWindow(window);
 }

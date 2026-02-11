@@ -20,10 +20,22 @@ public:
 	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
 
-	void OnEntryObjectChanged(const FAssetData& InData);
+	void OnEntryMaterialChanged(const FAssetData& InData);
 
-	bool OnShouldSetEntryAsset(const FAssetData& InData);
+	FString GetMaterialPath() const;
 
-	FString GetObjectPath() const;
-	FString ObjectPath;
+	TSharedPtr<FAssetThumbnailPool> AssetThumbnailPool;
+
+	void AddListItem(TSharedPtr<FString> Item);
+
+	/* Adds a new textbox with the string to the list */
+	TSharedRef<ITableRow> OnGenerateRowForList(TSharedPtr<FString> Item, const TSharedRef<STableViewBase>& OwnerTable);
+
+	FString MaterialPath;
+
+	/* The list of strings */
+	TArray<TSharedPtr<FString>> Items;
+
+	/* The actual UI list */
+	TSharedPtr<SListView<TSharedPtr<FString>>> ListViewWidget;
 };

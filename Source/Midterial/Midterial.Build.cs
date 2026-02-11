@@ -43,7 +43,9 @@ public class Midterial : ModuleRules
 				"UnrealEd",
 				"MaterialEditor",
 				"EditorWidgets",
-				"PropertyEditor"
+				"PropertyEditor",
+
+				"InputCore"
 			}
 			);
 		
