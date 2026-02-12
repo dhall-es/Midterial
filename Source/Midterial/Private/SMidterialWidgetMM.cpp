@@ -7,6 +7,8 @@
 BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 void SMidterialWidgetMM::Construct(const FArguments& InArgs)
 {	
+	Name = FText::FromString(InArgs._MaterialName);
+
 	ChildSlot
 	[
 		SNew(SVerticalBox)
@@ -29,7 +31,7 @@ void SMidterialWidgetMM::Construct(const FArguments& InArgs)
 			[
 				SNew(SEditableTextBox)
 				.Justification(ETextJustify::Left)
-				.Text(FText::FromString(InArgs._MaterialName))
+				.Text(Name)
 				.OnTextChanged(FOnTextChanged::CreateSP(this, &SMidterialWidgetMM::OnNameChanged))
 			]
 		]
