@@ -53,6 +53,7 @@ UObject* UMidterialBPLibrary::CreateAsset(FString AssetPath, UClass* AssetClass,
 		return nullptr;
 	}
 
+	bOutSuccess = true;
 	return Asset;
 }
 
@@ -338,10 +339,10 @@ void UMidterialBPLibrary::BuildMaterialInstance(FString MaterialInstancePath, UM
 				continue;
 			}
 
-			FString TexName{};
-			oTex->GetName().Split(FString(TEXT("_")), nullptr, &TexName, ESearchCase::CaseSensitive, ESearchDir::FromEnd);
+			FString TexExtension{};
+			oTex->GetName().Split(FString(TEXT("_")), nullptr, &TexExtension, ESearchCase::CaseSensitive, ESearchDir::FromEnd);
 
-			if (TexName.Equals(ParamName, ESearchCase::IgnoreCase))
+			if (TexExtension.Equals(ParamName, ESearchCase::IgnoreCase))
 			{
 				MatchingTexture = Cast<UTexture>(oTex);
 			}
@@ -354,73 +355,84 @@ void UMidterialBPLibrary::BuildMaterialInstance(FString MaterialInstancePath, UM
 	}
 }
 
-void UMidterialBPLibrary::BuildMaterialMultiTexture(FString MaterialPath, TArray<UObject*> Textures, bool& bOutSuccess, FString& OutInfoMessage)
+void UMidterialBPLibrary::BuildMaterialInstanceMatchExtension(UMaterial* InitialParent, TArray<FString> TexturePaths)
 {
-	//// Get material and texture
-	//UMaterial* Material = Cast<UMaterial>(StaticLoadObject(UObject::StaticClass(), nullptr, *MaterialPath));
-
-	//// Create material if it doesn't exist
-	//if (Material == nullptr)
-	//{
-	//	Material = CreateMaterialAsset(MaterialPath, bOutSuccess, OutInfoMessage);
-
-	//	// If material creation fails, just return
-	//	if (Material == nullptr)
-	//	{
-	//		return;
-	//	}
-
-	//	
-	//}
+	FString TexDirectory{}, TexName{};
 	
-	UTexture* BaseColorTex {};
-	UTexture* NormalTex {};
-	UTexture* ORMTex {};
+	// Split first texture path into the directory and filename
+	// (e.g. '/Midterial/DefaultTextures/' and 'Substance_graph_ORM.Substance_graph_ORM')
+	TexturePaths[0].Split(TEXT("/"), &TexDirectory, &TexName, ESearchCase::CaseSensitive, ESearchDir::FromEnd);
 
-	UTexture* AmbientOcclusionTex {};
-	UTexture* RoughnessTex {};
-	UTexture* MetallicTex {};
+	FString MaterialName{}, TargetPath{};
 
-	for (auto& oTex : Textures)
+	// Remove extension (e.g. '.Substance_graph_ORM')
+	if (TexName.Split(TEXT("."), &TexName, nullptr))
 	{
-		if (oTex->IsA(UTexture::StaticClass()) == false)
-		{
-			continue;
-		}
-		FString Name = oTex->GetName();
-		UTexture* tTex = Cast<UTexture>(oTex);
+		MaterialName = TexName;
+	}
+	
+	// Remove suffix (e.g. '_ORM')
+	if (TexName.Split(TEXT("_"), &TexName, nullptr, ESearchCase::CaseSensitive, ESearchDir::FromEnd))
+	{
+		MaterialName = TexName;
+	}
 
-		if (Name.Contains(TEXT("basecolor"), ESearchCase::IgnoreCase, ESearchDir::FromEnd))
+	TargetPath = TexDirectory + TEXT("/MI_") + MaterialName;
+
+	bool bOutSuccess{};
+	FString OutInfoMessage{};
+
+	UMaterialInstanceConstant* MaterialInst = CreateMaterialInstanceAsset(TargetPath, InitialParent, bOutSuccess, OutInfoMessage);
+
+	if (bOutSuccess == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Material Instance creation failed with message '%s'"), *OutInfoMessage)
+		return;
+	}
+
+	// Get Texture parameters
+	TMap<FMaterialParameterInfo, FMaterialParameterMetadata> TextureParamMap{};
+	MaterialInst->GetAllParametersOfType(EMaterialParameterType::Texture, TextureParamMap);
+
+	for (auto& ParamPair : TextureParamMap)
+	{
+		// Loop through each parameter name
+		FString ParamName = ParamPair.Key.Name.ToString();
+		UTexture* MatchingTexture{};
+
+		// Loop through each texture path to look for a match
+		for (auto& texPath : TexturePaths)
 		{
-			BaseColorTex = tTex;
-		}
-		else if (Name.Contains(TEXT("normal"), ESearchCase::IgnoreCase, ESearchDir::FromEnd))
-		{
-			NormalTex = tTex;
-		}
-		else if (Name.Contains(TEXT("ambientocclusion"), ESearchCase::IgnoreCase, ESearchDir::FromEnd))
-		{
-			AmbientOcclusionTex = tTex;
-		}
-		else if (Name.Contains(TEXT("roughness"), ESearchCase::IgnoreCase, ESearchDir::FromEnd))
-		{
-			RoughnessTex = tTex;
-		}
-		else if (Name.Contains(TEXT("metallic"), ESearchCase::IgnoreCase, ESearchDir::FromEnd))
-		{
-			MetallicTex = tTex;
-		}
-		// Check ORM last since "normal" contains "orm"
-		else if (Name.Contains(TEXT("orm"), ESearchCase::IgnoreCase, ESearchDir::FromEnd))
-		{
-			// Double-check the texture isn't a normal map, skip if it is
-			if (tTex->CompressionSettings == TC_Normalmap)
+			UObject* oTex = StaticLoadObject(UObject::StaticClass(), nullptr, *texPath);
+
+			// Skip if loaded asset from path is somehow not a texture
+			if (oTex->IsA(UTexture::StaticClass()) == false)
 			{
 				continue;
 			}
 
-			ORMTex = tTex;
+			// Get extension for texture asset (e.g. 'ORM')
+			FString TexExtension{};
+			if (oTex->GetName().Split(FString(TEXT("_")), nullptr, &TexExtension, ESearchCase::CaseSensitive, ESearchDir::FromEnd) == false)
+			{
+				TexExtension = oTex->GetName();
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("Texture path '%s' shortened to extension '%s'"), *texPath, *TexExtension)
+
+			// If the extension matches the name of the current material param,
+			// Store the texture and break
+			if (TexExtension.Equals(ParamName, ESearchCase::IgnoreCase))
+			{
+				MatchingTexture = Cast<UTexture>(oTex);
+				break;
+			}
+		}
+
+		// Assign the texture to the param if the texture is set
+		if (MatchingTexture != nullptr)
+		{
+			MaterialInst->SetTextureParameterValueEditorOnly(ParamPair.Key, MatchingTexture);
 		}
 	}
 }
-

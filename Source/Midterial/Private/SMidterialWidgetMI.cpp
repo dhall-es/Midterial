@@ -75,7 +75,8 @@ void SMidterialWidgetMI::Construct(const FArguments& InArgs)
 			+SHorizontalBox::Slot()
 			[
 				SNew(SButton)
-				.Text(FText::FromString("Assign Textures"))
+				.OnClicked(FOnClicked::CreateSP(this, &SMidterialWidgetMI::OnBuildButtonClicked))
+				.Text(FText::FromString("Build Material Instance"))
 				.HAlign(HAlign_Center)
 			]
 		]
@@ -84,13 +85,26 @@ void SMidterialWidgetMI::Construct(const FArguments& InArgs)
 
 void SMidterialWidgetMI::OnEntryMaterialChanged(const FAssetData& InData)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Entry Object Changed"))
 	MaterialPath = InData.GetObjectPathString();
 }
 
 FString SMidterialWidgetMI::GetMaterialPath() const
 {
 	return MaterialPath;
+}
+
+FReply SMidterialWidgetMI::OnBuildButtonClicked()
+{
+	UMaterial* Material = Cast<UMaterial>(StaticLoadObject(UObject::StaticClass(), nullptr, *MaterialPath));
+	TArray<FString> TexturePaths{};
+	for (auto& FileName : Items)
+	{
+		TexturePaths.Add(*FileName.Get());
+	}
+	
+	UMidterialBPLibrary::BuildMaterialInstanceMatchExtension(Material, TexturePaths);
+
+	return FReply::Handled();
 }
 
 void SMidterialWidgetMI::AddListItem(TSharedPtr<FString> Item)

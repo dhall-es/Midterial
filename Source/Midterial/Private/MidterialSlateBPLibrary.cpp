@@ -20,7 +20,7 @@ void UMidterialSlateBPLibrary::LoadMidterialMIWindow(TArray<UObject*> Textures)
 		.MinWidth(400.0f)
 		.MinHeight(200.0f)
 		.IsTopmostWindow(true)
-		.Title(FText::FromString("Auto-Create Material Instance"));
+		.Title(FText::FromString("Build Material Instance"));
 
 	window->SetContent(widget);
 	FSlateApplication::Get().AddWindow(window);

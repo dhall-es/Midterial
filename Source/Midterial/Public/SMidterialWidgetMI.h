@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "PropertyCustomizationHelpers.h"
 
+#include "MidterialBPLibrary.h"
+
 #include "Widgets/SCompoundWidget.h"
 
 /**
@@ -17,25 +19,32 @@ public:
 	{}
 	SLATE_END_ARGS()
 
-	/** Constructs this widget with InArgs */
+	// Constructs this widget with InArgs
 	void Construct(const FArguments& InArgs);
 
+	// Delegate for when Material Property Entry Box is changed
 	void OnEntryMaterialChanged(const FAssetData& InData);
 
+	// Delegate so Material Property Entry Box knows what to display
 	FString GetMaterialPath() const;
 
-	TSharedPtr<FAssetThumbnailPool> AssetThumbnailPool;
-
-	void AddListItem(TSharedPtr<FString> Item);
-
-	/* Adds a new textbox with the string to the list */
-	TSharedRef<ITableRow> OnGenerateRowForList(TSharedPtr<FString> Item, const TSharedRef<STableViewBase>& OwnerTable);
-
+	// The path of the user-set parent material
 	FString MaterialPath;
 
-	/* The list of strings */
+	// The thumbnail pool for the Material Property Entry Box so thumbnails can be displayed
+	TSharedPtr<FAssetThumbnailPool> AssetThumbnailPool;
+
+	// Delegate for when Assign Textures button is clicked
+	FReply OnBuildButtonClicked();
+	
+	void AddListItem(TSharedPtr<FString> Item);
+
+	// Adds a new textbox with the string to the list
+	TSharedRef<ITableRow> OnGenerateRowForList(TSharedPtr<FString> Item, const TSharedRef<STableViewBase>& OwnerTable);
+
+	// The list of strings
 	TArray<TSharedPtr<FString>> Items;
 
-	/* The actual UI list */
+	// The actual UI list
 	TSharedPtr<SListView<TSharedPtr<FString>>> ListViewWidget;
 };

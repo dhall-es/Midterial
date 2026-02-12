@@ -198,7 +198,6 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 		static void BuildMaterialInstance(FString MaterialInstancePath, UMaterial* InitialParent, TArray<UObject*> Textures,
 			bool& bOutSuccess, FString& OutInfoMessage);
 
-
-	UFUNCTION(BlueprintCallable, Category = "Midterial/Testing")
-		static void BuildMaterialMultiTexture(FString MaterialPath, TArray<UObject*> Textures, bool& bOutSuccess, FString& OutInfoMessage);
+	UFUNCTION(BlueprintCallable, Category = "Midterial/Instance Creation")
+		static void BuildMaterialInstanceMatchExtension(UMaterial* InitialParent, TArray<FString> TexturePaths);
 };
