@@ -76,74 +76,6 @@ UMaterialInstanceConstant* UMidterialBPLibrary::CreateMaterialInstanceAsset(FStr
 	return Cast<UMaterialInstanceConstant>(Asset);
 }
 
-void UMidterialBPLibrary::BuildMaterialSingleTexture(FString MaterialPath, UTexture* Texture, FVector2D TexCoord, FLinearColor Color,
-	float Metallic, float Specular, float Roughness, bool& bOutSuccess, FString& OutInfoMessage)
-{
-	// Get material and texture
-	UMaterial* Material = Cast<UMaterial>(StaticLoadObject(UObject::StaticClass(), nullptr, *MaterialPath));
-
-	// Create material if it doesn't exist
-	if (Material == nullptr)
-	{
-		Material = CreateMaterialAsset(MaterialPath, bOutSuccess, OutInfoMessage);
-
-		// If material creation fails, just return
-		if (Material == nullptr)
-		{
-			return;
-		}
-	}
-
-	// Create nodes
-	UMaterialExpressionTextureCoordinate* TextureCoordinateExp = AddTexCoordExpressionDesc(Material, TexCoord, "MyTextureCoordinates", FIntPoint(-1000, -50));
-	UMaterialExpressionTextureSampleParameter2D* TextureExp = AddTextureParameter(Material, Texture, "MyTexture", FIntPoint(-800, -50));
-	UMaterialExpressionVectorParameter* ColorExp = AddVectorParameter(Material, Color, "MyColor", FIntPoint(-800, 200));
-	UMaterialExpressionMultiply* ColorMultiplyExp = AddMultiplyExpression(Material, "MyColorMultiply", FIntPoint(-500, 0));
-	UMaterialExpressionScalarParameter* MetallicScalarExp = AddScalarParameter(Material, Metallic, "MyMetallic", FIntPoint(-300, 50));
-	UMaterialExpressionScalarParameter* SpecularScalarExp = AddScalarParameter(Material, Specular, "MySpecular", FIntPoint(-300, 150));
-	UMaterialExpressionScalarParameter* RoughnessScalarExp = AddScalarParameter(Material, Roughness, "MyRoughness", FIntPoint(-300, 250));
-
-	// Connect nodes
-	TextureCoordinateExp->ConnectExpression(&TextureExp->Coordinates, 0);
-	TextureExp->ConnectExpression(&ColorMultiplyExp->A, 0);
-	ColorExp->ConnectExpression(&ColorMultiplyExp->B, 0);
-
-	// Connect to main material node
-	Material->GetEditorOnlyData()->BaseColor.Connect(0, ColorMultiplyExp);
-	Material->GetEditorOnlyData()->Metallic.Connect(0, MetallicScalarExp);
-	Material->GetEditorOnlyData()->Specular.Connect(0, SpecularScalarExp);
-	Material->GetEditorOnlyData()->Roughness.Connect(0, RoughnessScalarExp);
-
-	bOutSuccess = true;
-	OutInfoMessage = FString::Printf(TEXT("Build Material Succeeded - '%s'"), *MaterialPath);
-}
-
-void UMidterialBPLibrary::BuildMasterMaterialSections(FString MaterialPath, TArray<SMidPropertySection*> Sections)
-{
-	// Get material and texture
-	UMaterial* Material = Cast<UMaterial>(StaticLoadObject(UObject::StaticClass(), nullptr, *MaterialPath));
-
-	// Create material if it doesn't exist
-	if (Material == nullptr)
-	{
-		bool bOutSuccess{};
-		FString OutInfoMessage{};
-
-		Material = CreateMaterialAsset(MaterialPath, bOutSuccess, OutInfoMessage);
-
-		// If material creation fails, just return
-		if (Material == nullptr)
-		{
-			return;
-		}
-	}
-
-	for (auto& Section : Sections)
-	{
-		Section->AddExpressionsToMaterial(Material);
-	}
-}
-
 UMaterialExpression* UMidterialBPLibrary::GetExistingMaterialExpressionFromName(UMaterial* Material, FString NameOrDescription)
 {
 	// Loop through expressions in material
@@ -373,48 +305,6 @@ UMaterialExpressionTextureCoordinate* UMidterialBPLibrary::AddTexCoordExpression
 
 	// Return parameter
 	return TextureCoordinateExpression;
-}
-
-void UMidterialBPLibrary::BuildMaterialInstance(FString MaterialInstancePath, UMaterial* InitialParent, TArray<UObject*> Textures, bool& bOutSuccess, FString& OutInfoMessage)
-{
-	UMaterialInstanceConstant* MaterialInst = CreateMaterialInstanceAsset(MaterialInstancePath, InitialParent, bOutSuccess, OutInfoMessage);
-
-	/*FString PathName{}, Left{}, Right{};
-	PathName = InitialParent->GetPathName(nullptr);
-
-	if (PathName.Split(TEXT("/"), &Left, &Right, ESearchCase::CaseSensitive, ESearchDir::FromEnd))
-	{
-		OutInfoMessage = Right;
-	}*/
-	TMap<FMaterialParameterInfo, FMaterialParameterMetadata> TextureParamMap {};
-	MaterialInst->GetAllParametersOfType(EMaterialParameterType::Texture, TextureParamMap);
-
-	for (auto& ParamPair : TextureParamMap)
-	{
-		FString ParamName = ParamPair.Key.Name.ToString();
-		UTexture* MatchingTexture {};
-
-		for (auto& oTex : Textures)
-		{
-			if (oTex->IsA(UTexture::StaticClass()) == false)
-			{
-				continue;
-			}
-
-			FString TexExtension{};
-			oTex->GetName().Split(FString(TEXT("_")), nullptr, &TexExtension, ESearchCase::CaseSensitive, ESearchDir::FromEnd);
-
-			if (TexExtension.Equals(ParamName, ESearchCase::IgnoreCase))
-			{
-				MatchingTexture = Cast<UTexture>(oTex);
-			}
-		}
-
-		if (MatchingTexture != nullptr)
-		{
-			MaterialInst->SetTextureParameterValueEditorOnly(ParamPair.Key, MatchingTexture);
-		}
-	}
 }
 
 void UMidterialBPLibrary::BuildMaterialInstanceMatchExtension(UMaterial* InitialParent, TArray<FString> TexturePaths)

@@ -17,21 +17,29 @@
 
 #include "Widgets/SCompoundWidget.h"
 
-/**
- * 
- */
 class MIDTERIAL_API SMidterialWidgetMM : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS(SMidterialWidgetMM)
 	{}
+	SLATE_ARGUMENT(FString, MaterialName)
+	SLATE_ARGUMENT(FString, BaseColorPath)
+	SLATE_ARGUMENT(FString, NormalPath)
+	SLATE_ARGUMENT(FString, ORMPath)
 	SLATE_END_ARGS()
 
-	/** Constructs this widget with InArgs */
+	// Constructs this widget with InArgs
 	void Construct(const FArguments& InArgs);
 
 	// Delegate for when Build Material button is clicked
 	FReply OnBuildButtonClicked() const;
+
+	void OnNameChanged(const FText& NewName);
+
+	static void BuildMasterMaterialSections(FString MaterialPath, TArray<SMidPropertySection*> Sections);
+
+protected:
+	FText Name;
 
 	TSharedPtr<SBaseColorPropertySection> BaseColorSection;
 	TSharedPtr<SNormalPropertySection> NormalSection;

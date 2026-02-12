@@ -89,26 +89,6 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 
 	UFUNCTION(BlueprintCallable, Category = "Midterial|Assets")
 	static UMaterialInstanceConstant* CreateMaterialInstanceAsset(FString AssetPath, UMaterialInterface* InitialParent, bool& bOutSuccess, FString& OutInfoMessage);
-	/**
-	* Build a material graph with the provided values
-	* 
-	* Sourced from https://www.youtube.com/watch?v=Fd56hSN83mk
-	* 
-	* @param MaterialPath		The path of the material: "/Game/Folder/MyMaterial"
-	* @param TexturePath		The path of the texture to add in the material: "/Game/Folder/MyTexture"
-	* @param TexCoord			Texture coordinates for the texture
-	* @param Color				Color that will be multiplied by the texture
-	* @param Metallic			Metallic value of the material
-	* @param Specular			Specular value of the material
-	* @param Roughness			Roughness value of the material
-	* @param bOutSuccess		If the action was a success or not
-	* @param OutInfoMessage		More information about the action's result
-	*/
-	UFUNCTION(BlueprintCallable, Category = "Midterial")
-		static void BuildMaterialSingleTexture(FString MaterialPath, UTexture* Texture, FVector2D TexCoord, FLinearColor Color,
-			float Metallic, float Specular, float Roughness, bool& bOutSuccess, FString& OutInfoMessage);
-
-		static void BuildMasterMaterialSections(FString MaterialPath, TArray<SMidPropertySection*> Sections);
 
 	/**
 	* Retrieve an existing material expression based on the provided name or description
@@ -214,10 +194,12 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "Midterial")
 		static UMaterialExpressionTextureCoordinate* AddTexCoordExpression(UMaterial* Material, FVector2D Value, FIntPoint NodePos);
 
-	UFUNCTION(BlueprintCallable, Category = "Midterial/Testing")
-		static void BuildMaterialInstance(FString MaterialInstancePath, UMaterial* InitialParent, TArray<UObject*> Textures,
-			bool& bOutSuccess, FString& OutInfoMessage);
-
+	/**
+	* Build a Material Instance and assign textures to it
+	*
+	* @param InitialParent		The parent material for the Material Instance
+	* @param TexturePaths		An array of texture paths. Textures here will be assigned to the Material Instance
+	*/
 	UFUNCTION(BlueprintCallable, Category = "Midterial/Instance Creation")
 		static void BuildMaterialInstanceMatchExtension(UMaterial* InitialParent, TArray<FString> TexturePaths);
 };

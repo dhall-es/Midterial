@@ -23,6 +23,7 @@ class MIDTERIAL_API SMidPropertySection : public SCompoundWidget
 public:
 	SLATE_BEGIN_ARGS(SMidPropertySection)
 	{}
+	SLATE_ARGUMENT(FString, TexturePath)
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */

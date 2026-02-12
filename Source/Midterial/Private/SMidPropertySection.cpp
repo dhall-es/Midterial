@@ -8,7 +8,9 @@ BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 void SMidPropertySection::Construct(const FArguments& InArgs)
 {
 	AssetThumbnailPool = MakeShareable(new FAssetThumbnailPool(24));
-	bIsEnabledBoxChecked = true;
+
+	TexturePath = InArgs._TexturePath;
+	bIsEnabledBoxChecked = !TexturePath.IsEmpty();
 
 	ChildSlot
 	[

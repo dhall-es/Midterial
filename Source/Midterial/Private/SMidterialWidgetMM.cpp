@@ -11,6 +11,29 @@ void SMidterialWidgetMM::Construct(const FArguments& InArgs)
 	[
 		SNew(SVerticalBox)
 		+SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(5.0f)
+		[
+			SNew(SHorizontalBox)
+			+SHorizontalBox::Slot()
+			.AutoWidth()
+			.VAlign(VAlign_Center)
+			.Padding(5.0f)
+			[
+				SNew(STextBlock)
+				.Text(FText::FromString("Material Name"))
+			]
+			+SHorizontalBox::Slot()
+			.VAlign(VAlign_Center)
+			.Padding(5.0f)
+			[
+				SNew(SEditableTextBox)
+				.Justification(ETextJustify::Left)
+				.Text(FText::FromString(InArgs._MaterialName))
+				.OnTextChanged(FOnTextChanged::CreateSP(this, &SMidterialWidgetMM::OnNameChanged))
+			]
+		]
+		+SVerticalBox::Slot()
 		.Padding(5.0f)
 		[
 			SNew(SScrollBox)
@@ -29,6 +52,7 @@ void SMidterialWidgetMM::Construct(const FArguments& InArgs)
 				.BodyContent()
 				[
 					SAssignNew(BaseColorSection, SBaseColorPropertySection)
+					.TexturePath(InArgs._BaseColorPath)
 				]
 			]
 			+SScrollBox::Slot()
@@ -46,6 +70,7 @@ void SMidterialWidgetMM::Construct(const FArguments& InArgs)
 				.BodyContent()
 				[
 					SAssignNew(NormalSection, SNormalPropertySection)
+					.TexturePath(InArgs._NormalPath)
 				]
 			]
 			+SScrollBox::Slot()
@@ -63,6 +88,7 @@ void SMidterialWidgetMM::Construct(const FArguments& InArgs)
 				.BodyContent()
 				[
 					SAssignNew(ORMSection, SORMPropertySection)
+					.TexturePath(InArgs._ORMPath)
 				]
 			]
 		]
@@ -81,7 +107,14 @@ void SMidterialWidgetMM::Construct(const FArguments& InArgs)
 FReply SMidterialWidgetMM::OnBuildButtonClicked() const
 {
 	FString MaterialPath{};
-	MaterialPath = TEXT("/Game/MM_Example");
+	if (Name.IsEmptyOrWhitespace())
+	{
+		MaterialPath = TEXT("/Game/MM_MidterialExample");
+	}
+	else
+	{
+		MaterialPath = TEXT("/Game/") + Name.ToString();
+	}
 
 	TArray<SMidPropertySection*> Sections{};
 
@@ -89,7 +122,7 @@ FReply SMidterialWidgetMM::OnBuildButtonClicked() const
 	Sections.Add(NormalSection.Get());
 	Sections.Add(ORMSection.Get());
 
-	UMidterialBPLibrary::BuildMasterMaterialSections(MaterialPath, Sections);
+	BuildMasterMaterialSections(MaterialPath, Sections);
 
 	TArray<UObject*> AssetsToSync{};
 	AssetsToSync.Add(StaticLoadObject(UObject::StaticClass(), nullptr, *MaterialPath));
@@ -98,5 +131,36 @@ FReply SMidterialWidgetMM::OnBuildButtonClicked() const
 	ContentBrowserModule.Get().SyncBrowserToAssets(AssetsToSync);
 
 	return FReply::Handled();
+}
+
+void SMidterialWidgetMM::OnNameChanged(const FText& NewName)
+{
+	Name = NewName;
+}
+
+void SMidterialWidgetMM::BuildMasterMaterialSections(FString MaterialPath, TArray<SMidPropertySection*> Sections)
+{
+	// Get material and texture
+	UMaterial* Material = Cast<UMaterial>(StaticLoadObject(UObject::StaticClass(), nullptr, *MaterialPath));
+
+	// Create material if it doesn't exist
+	if (Material == nullptr)
+	{
+		bool bOutSuccess{};
+		FString OutInfoMessage{};
+
+		Material = UMidterialBPLibrary::CreateMaterialAsset(MaterialPath, bOutSuccess, OutInfoMessage);
+
+		// If material creation fails, just return
+		if (Material == nullptr)
+		{
+			return;
+		}
+	}
+
+	for (auto& Section : Sections)
+	{
+		Section->AddExpressionsToMaterial(Material);
+	}
 }
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

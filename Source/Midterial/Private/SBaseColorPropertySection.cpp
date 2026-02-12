@@ -63,9 +63,21 @@ void SBaseColorPropertySection::AddExpressionsToMaterial(UMaterial* Material)
 	}
 
 	UMaterialExpressionTextureCoordinate* TextureCoordinateExp = UMidterialBPLibrary::AddTexCoordExpression(Material, FVector2D(0.0f, 0.0f), FIntPoint(-1000, -50));
-	UMaterialExpressionTextureSampleParameter2D* TextureExp = UMidterialBPLibrary::AddTextureParameter(Material, Texture, "BaseColor", FIntPoint(-800, -50));
+	UMaterialExpressionTextureSampleParameter2D* TextureExp = UMidterialBPLibrary::AddTextureParameter(Material, Texture, TEXT("BaseColor"), FIntPoint(-800, -50));
 
 	TextureCoordinateExp->ConnectExpression(&TextureExp->Coordinates, 0);
 	
-	Material->GetEditorOnlyData()->BaseColor.Connect(0, TextureExp);
+	if (bIsTintBoxChecked == false)
+	{
+		Material->GetEditorOnlyData()->BaseColor.Connect(0, TextureExp);
+		return;
+	}
+
+	UMaterialExpressionVectorParameter* ColorExp = UMidterialBPLibrary::AddVectorParameter(Material, FLinearColor::White, TEXT("Tint"), FIntPoint(-500, 200));
+	UMaterialExpressionMultiply* ColorMultiplyExp = UMidterialBPLibrary::AddMultiplyExpression(Material, TEXT(""), FIntPoint(-200, 0));
+
+	TextureExp->ConnectExpression(&ColorMultiplyExp->A, 0);
+	ColorExp->ConnectExpression(&ColorMultiplyExp->B, 0);
+
+	Material->GetEditorOnlyData()->BaseColor.Connect(0, ColorMultiplyExp);
 }
