@@ -6,6 +6,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 #include "Midterial.h"
+#include "SMidPropertySection.h"
 
 #include "AssetToolsModule.h" // AssetTools
 #include "Materials/Material.h" // Engine
@@ -51,6 +52,8 @@ class UMaterialExpressionScalarParameter;
 class UMaterialExpressionVectorParameter;
 class UMaterialExpressionMultiply;
 class UMaterialExpressionTextureCoordinate;
+
+class SMidPropertySection;
 
 UCLASS()
 class UMidterialBPLibrary : public UBlueprintFunctionLibrary
@@ -105,6 +108,8 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 		static void BuildMaterialSingleTexture(FString MaterialPath, UTexture* Texture, FVector2D TexCoord, FLinearColor Color,
 			float Metallic, float Specular, float Roughness, bool& bOutSuccess, FString& OutInfoMessage);
 
+		static void BuildMasterMaterialSections(FString MaterialPath, TArray<SMidPropertySection*> Sections);
+
 	/**
 	* Retrieve an existing material expression based on the provided name or description
 	* 
@@ -117,6 +122,9 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Midterial")
 		static UMaterialExpression* GetExistingMaterialExpressionFromName(UMaterial* Material, FString NameOrDescription);
+
+	UFUNCTION(BlueprintCallable, Category = "Midterial")
+		static UMaterialExpression* GetExistingMaterialExpressionFromClass(UMaterial* Material, UClass* Class);
 
 	/**
 	* Add a texture parameter to a material graph

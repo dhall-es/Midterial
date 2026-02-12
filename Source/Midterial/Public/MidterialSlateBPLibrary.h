@@ -11,6 +11,7 @@
 #include "Editor/EditorWidgets/Public/SAssetDropTarget.h"
 
 #include "SMidterialWidgetMI.h"
+#include "SMidterialWidgetMM.h"
 
 #include "MidterialSlateBPLibrary.generated.h"
 
@@ -23,4 +24,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Midterial|Slate")
 	static void LoadMidterialMIWindow(TArray<UObject*> Textures);
+
+	UFUNCTION(BlueprintCallable, Category = "Midterial|Slate")
+	static void LoadMidterialMMWindow(TArray<UObject*> Textures);
 };

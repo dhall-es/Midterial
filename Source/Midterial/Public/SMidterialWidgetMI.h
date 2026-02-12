@@ -34,7 +34,7 @@ public:
 	// The thumbnail pool for the Material Property Entry Box so thumbnails can be displayed
 	TSharedPtr<FAssetThumbnailPool> AssetThumbnailPool;
 
-	// Delegate for when Assign Textures button is clicked
+	// Delegate for when Build Material button is clicked
 	FReply OnBuildButtonClicked();
 	
 	void AddListItem(TSharedPtr<FString> Item);

@@ -5,7 +5,7 @@
 
 void UMidterialSlateBPLibrary::LoadMidterialMIWindow(TArray<UObject*> Textures)
 {
-	TSharedRef<SMidterialWidgetMI> widget = SNew(SMidterialWidgetMI);
+	TSharedRef<SMidterialWidgetMI> Widget = SNew(SMidterialWidgetMI);
 	for (auto& oTex : Textures)
 	{
 		if (oTex->IsA(UTexture::StaticClass()) == false)
@@ -13,15 +13,29 @@ void UMidterialSlateBPLibrary::LoadMidterialMIWindow(TArray<UObject*> Textures)
 			continue;
 		}
 
-		widget->AddListItem(MakeShareable(new FString(oTex->GetPathName())));
+		Widget->AddListItem(MakeShareable(new FString(oTex->GetPathName())));
 	}
 
-	TSharedRef<SWindow> window = SNew(SWindow)
+	TSharedRef<SWindow> Window = SNew(SWindow)
 		.MinWidth(400.0f)
 		.MinHeight(200.0f)
 		.IsTopmostWindow(true)
 		.Title(FText::FromString("Build Material Instance"));
 
-	window->SetContent(widget);
-	FSlateApplication::Get().AddWindow(window);
+	Window->SetContent(Widget);
+	FSlateApplication::Get().AddWindow(Window);
+}
+
+void UMidterialSlateBPLibrary::LoadMidterialMMWindow(TArray<UObject*> Textures)
+{
+	TSharedRef<SMidterialWidgetMM> Widget = SNew(SMidterialWidgetMM);
+
+	TSharedRef<SWindow> Window = SNew(SWindow)
+		.MinWidth(400.0f)
+		.MinHeight(200.0f)
+		.IsTopmostWindow(true)
+		.Title(FText::FromString("Build Master Material"));
+
+	Window->SetContent(Widget);
+	FSlateApplication::Get().AddWindow(Window);
 }

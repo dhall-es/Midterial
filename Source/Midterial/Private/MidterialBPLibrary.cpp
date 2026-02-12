@@ -118,6 +118,32 @@ void UMidterialBPLibrary::BuildMaterialSingleTexture(FString MaterialPath, UText
 	OutInfoMessage = FString::Printf(TEXT("Build Material Succeeded - '%s'"), *MaterialPath);
 }
 
+void UMidterialBPLibrary::BuildMasterMaterialSections(FString MaterialPath, TArray<SMidPropertySection*> Sections)
+{
+	// Get material and texture
+	UMaterial* Material = Cast<UMaterial>(StaticLoadObject(UObject::StaticClass(), nullptr, *MaterialPath));
+
+	// Create material if it doesn't exist
+	if (Material == nullptr)
+	{
+		bool bOutSuccess{};
+		FString OutInfoMessage{};
+
+		Material = CreateMaterialAsset(MaterialPath, bOutSuccess, OutInfoMessage);
+
+		// If material creation fails, just return
+		if (Material == nullptr)
+		{
+			return;
+		}
+	}
+
+	for (auto& Section : Sections)
+	{
+		Section->AddExpressionsToMaterial(Material);
+	}
+}
+
 UMaterialExpression* UMidterialBPLibrary::GetExistingMaterialExpressionFromName(UMaterial* Material, FString NameOrDescription)
 {
 	// Loop through expressions in material
@@ -131,6 +157,19 @@ UMaterialExpression* UMidterialBPLibrary::GetExistingMaterialExpressionFromName(
 		}
 		// Otherwise check the name on nodes that can be renamed
 		else if (Expression->Desc == NameOrDescription)
+		{
+			return Expression;
+		}
+	}
+	return nullptr;
+}
+
+UMaterialExpression* UMidterialBPLibrary::GetExistingMaterialExpressionFromClass(UMaterial* Material, UClass* Class)
+{
+	// Loop through expressions in material
+	for (UMaterialExpression* Expression : Material->GetExpressions())
+	{
+		if (Expression->IsA(Class))
 		{
 			return Expression;
 		}
