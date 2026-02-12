@@ -6,7 +6,14 @@
 #include "PropertyCustomizationHelpers.h"
 
 #include "MidterialBPLibrary.h"
+
 #include "SMidPropertySection.h"
+#include "SBaseColorPropertySection.h"
+#include "SNormalPropertySection.h"
+#include "SORMPropertySection.h"
+
+#include "ContentBrowserModule.h"
+#include "IContentBrowserSingleton.h"
 
 #include "Widgets/SCompoundWidget.h"
 
@@ -24,7 +31,9 @@ public:
 	void Construct(const FArguments& InArgs);
 
 	// Delegate for when Build Material button is clicked
-	FReply OnBuildButtonClicked();
+	FReply OnBuildButtonClicked() const;
 
-	TSharedPtr<SMidPropertySection> BaseColorSection;
+	TSharedPtr<SBaseColorPropertySection> BaseColorSection;
+	TSharedPtr<SNormalPropertySection> NormalSection;
+	TSharedPtr<SORMPropertySection> ORMSection;
 };

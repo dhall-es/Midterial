@@ -8,7 +8,7 @@ BEGIN_SLATE_FUNCTION_BUILD_OPTIMIZATION
 void SMidPropertySection::Construct(const FArguments& InArgs)
 {
 	AssetThumbnailPool = MakeShareable(new FAssetThumbnailPool(24));
-	TextureName = InArgs._TextureName;
+	bIsEnabledBoxChecked = true;
 
 	ChildSlot
 	[
@@ -45,7 +45,7 @@ void SMidPropertySection::Construct(const FArguments& InArgs)
 			.AutoWidth()
 			[
 				SNew(STextBlock)
-				.Text(FText::FromString(InArgs._TextureName))
+				.Text(FText::FromString(DisplayTextureName))
 				.IsEnabled(this, &SMidPropertySection::IsEnabled)
 			]
 			+SHorizontalBox::Slot()
@@ -97,20 +97,7 @@ bool SMidPropertySection::IsEnabled() const
 
 void SMidPropertySection::AddExpressionsToMaterial(UMaterial* Material)
 {
-	/*
-	UMaterialExpressionTextureCoordinate* TextureCoordinateExp =
-		Cast<UMaterialExpressionTextureCoordinate>(
-			UMidterialBPLibrary::GetExistingMaterialExpressionFromClass(Material, UMaterialExpressionTextureCoordinate::StaticClass())
-		);
 
-	UTexture* Texture = Cast<UTexture>(StaticLoadObject(UObject::StaticClass(), nullptr, *TexturePath));
-	if (Texture == nullptr)
-	{
-		return;
-	}
-
-	UMaterialExpressionTextureSampleParameter2D* TextureExp = UMidterialBPLibrary::AddTextureParameter(Material, Texture, TextureName, FIntPoint(-800, -50));
-	*/
 }
 
 END_SLATE_FUNCTION_BUILD_OPTIMIZATION

@@ -95,7 +95,7 @@ void UMidterialBPLibrary::BuildMaterialSingleTexture(FString MaterialPath, UText
 	}
 
 	// Create nodes
-	UMaterialExpressionTextureCoordinate* TextureCoordinateExp = AddTexCoordExpression(Material, TexCoord, "MyTextureCoordinates", FIntPoint(-1000, -50));
+	UMaterialExpressionTextureCoordinate* TextureCoordinateExp = AddTexCoordExpressionDesc(Material, TexCoord, "MyTextureCoordinates", FIntPoint(-1000, -50));
 	UMaterialExpressionTextureSampleParameter2D* TextureExp = AddTextureParameter(Material, Texture, "MyTexture", FIntPoint(-800, -50));
 	UMaterialExpressionVectorParameter* ColorExp = AddVectorParameter(Material, Color, "MyColor", FIntPoint(-800, 200));
 	UMaterialExpressionMultiply* ColorMultiplyExp = AddMultiplyExpression(Material, "MyColorMultiply", FIntPoint(-500, 0));
@@ -327,7 +327,7 @@ UMaterialExpressionMultiply* UMidterialBPLibrary::AddMultiplyExpression(UMateria
 	return MultiplyExpression;
 }
 
-UMaterialExpressionTextureCoordinate* UMidterialBPLibrary::AddTexCoordExpression(UMaterial* Material, FVector2D Value,
+UMaterialExpressionTextureCoordinate* UMidterialBPLibrary::AddTexCoordExpressionDesc(UMaterial* Material, FVector2D Value,
 	FString ExpressionDesc, FIntPoint NodePos)
 {
 	// Get existing parameter from material
@@ -345,6 +345,29 @@ UMaterialExpressionTextureCoordinate* UMidterialBPLibrary::AddTexCoordExpression
 
 	// Set name and position
 	TextureCoordinateExpression->Desc = *ExpressionDesc;
+	TextureCoordinateExpression->MaterialExpressionEditorX = NodePos.X;
+	TextureCoordinateExpression->MaterialExpressionEditorY = NodePos.Y;
+
+	// Return parameter
+	return TextureCoordinateExpression;
+}
+
+UMaterialExpressionTextureCoordinate* UMidterialBPLibrary::AddTexCoordExpression(UMaterial* Material, FVector2D Value, FIntPoint NodePos)
+{
+	// Get existing parameter from material
+	UMaterialExpressionTextureCoordinate* TextureCoordinateExpression =
+		Cast<UMaterialExpressionTextureCoordinate>(GetExistingMaterialExpressionFromClass(Material, UMaterialExpressionTextureCoordinate::StaticClass()));
+
+	// Create new parameter if it doesn't exist
+	if (TextureCoordinateExpression == nullptr)
+	{
+		UMaterialExpression* Expression =
+			UMaterialEditingLibrary::CreateMaterialExpression(Material, UMaterialExpressionTextureCoordinate::StaticClass());
+		TextureCoordinateExpression = Cast<UMaterialExpressionTextureCoordinate>(Expression);
+		Material->AddExpressionParameter(TextureCoordinateExpression, Material->EditorParameters);
+	}
+
+	// Set name and position
 	TextureCoordinateExpression->MaterialExpressionEditorX = NodePos.X;
 	TextureCoordinateExpression->MaterialExpressionEditorY = NodePos.Y;
 

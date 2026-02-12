@@ -200,7 +200,19 @@ class UMidterialBPLibrary : public UBlueprintFunctionLibrary
 	* @return The expression
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Midterial")
-		static UMaterialExpressionTextureCoordinate* AddTexCoordExpression(UMaterial* Material, FVector2D Value, FString ExpressionDesc, FIntPoint NodePos);
+		static UMaterialExpressionTextureCoordinate* AddTexCoordExpressionDesc(UMaterial* Material, FVector2D Value, FString ExpressionDesc, FIntPoint NodePos);
+
+	/**
+	* Add a texture coordinate expression to a material graph
+	*
+	* @param Material			The material in which to add the expression
+	* @param Value				The texture coordinates value to use
+	* @param NodePos			The XY coordinates of the node in the graph
+	*
+	* @return The expression
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Midterial")
+		static UMaterialExpressionTextureCoordinate* AddTexCoordExpression(UMaterial* Material, FVector2D Value, FIntPoint NodePos);
 
 	UFUNCTION(BlueprintCallable, Category = "Midterial/Testing")
 		static void BuildMaterialInstance(FString MaterialInstancePath, UMaterial* InitialParent, TArray<UObject*> Textures,

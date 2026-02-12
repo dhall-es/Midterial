@@ -23,11 +23,10 @@ class MIDTERIAL_API SMidPropertySection : public SCompoundWidget
 public:
 	SLATE_BEGIN_ARGS(SMidPropertySection)
 	{}
-	SLATE_ARGUMENT(FString, TextureName)
 	SLATE_END_ARGS()
 
 	/** Constructs this widget with InArgs */
-	void Construct(const FArguments& InArgs);
+	virtual void Construct(const FArguments& InArgs);
 
 	void OnEntryTextureChanged(const FAssetData& InData);
 
@@ -39,12 +38,12 @@ public:
 
 	bool IsEnabled() const;
 
-	void AddExpressionsToMaterial(UMaterial* Material);
+	virtual void AddExpressionsToMaterial(UMaterial* Material);
 
 protected:
 	TSharedPtr<SVerticalBox> VerticalBoxWidget;
 	
-	FString TextureName;
+	FString DisplayTextureName;
 	FString TexturePath;
 
 	bool bIsEnabledBoxChecked;

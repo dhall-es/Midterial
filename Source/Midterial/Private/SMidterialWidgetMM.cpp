@@ -13,19 +13,57 @@ void SMidterialWidgetMM::Construct(const FArguments& InArgs)
 		+SVerticalBox::Slot()
 		.Padding(5.0f)
 		[
-			SNew(SExpandableArea)
-			.AllowAnimatedTransition(false)
-			.HeaderContent()
+			SNew(SScrollBox)
+			+SScrollBox::Slot()
+			.Padding(5.0f)
 			[
-				SNew(STextBlock)
-				.Text(FText::FromString("Base Color"))
+				SNew(SExpandableArea)
+				.AllowAnimatedTransition(false)
+				.HeaderContent()
+				[
+					SNew(STextBlock)
+					.Text(FText::FromString("Base Color"))
+				]
+				.HeaderPadding(FMargin(5.0f, 2.0f))
+				.Padding(FMargin(10.0f, 5.0f, 5.0f, 5.0f))
+				.BodyContent()
+				[
+					SAssignNew(BaseColorSection, SBaseColorPropertySection)
+				]
 			]
-			.HeaderPadding(FMargin(5.0f, 2.0f))
-			.Padding(FMargin(10.0f, 5.0f, 5.0f, 5.0f))
-			.BodyContent()
+			+SScrollBox::Slot()
+			.Padding(5.0f)
 			[
-				SAssignNew(BaseColorSection, SMidPropertySection)
-				.TextureName(TEXT("Base Color"))
+				SNew(SExpandableArea)
+				.AllowAnimatedTransition(false)
+				.HeaderContent()
+				[
+					SNew(STextBlock)
+					.Text(FText::FromString("Normal"))
+				]
+				.HeaderPadding(FMargin(5.0f, 2.0f))
+				.Padding(FMargin(10.0f, 5.0f, 5.0f, 5.0f))
+				.BodyContent()
+				[
+					SAssignNew(NormalSection, SNormalPropertySection)
+				]
+			]
+			+SScrollBox::Slot()
+			.Padding(5.0f)
+			[
+				SNew(SExpandableArea)
+				.AllowAnimatedTransition(false)
+				.HeaderContent()
+				[
+					SNew(STextBlock)
+					.Text(FText::FromString("ORM"))
+				]
+				.HeaderPadding(FMargin(5.0f, 2.0f))
+				.Padding(FMargin(10.0f, 5.0f, 5.0f, 5.0f))
+				.BodyContent()
+				[
+					SAssignNew(ORMSection, SORMPropertySection)
+				]
 			]
 		]
 		+SVerticalBox::Slot()
@@ -40,16 +78,24 @@ void SMidterialWidgetMM::Construct(const FArguments& InArgs)
 	];
 }
 
-FReply SMidterialWidgetMM::OnBuildButtonClicked()
+FReply SMidterialWidgetMM::OnBuildButtonClicked() const
 {
 	FString MaterialPath{};
-	MaterialPath = TEXT("/Game/MM_Example.MM_Example");
+	MaterialPath = TEXT("/Game/MM_Example");
 
 	TArray<SMidPropertySection*> Sections{};
 
 	Sections.Add(BaseColorSection.Get());
+	Sections.Add(NormalSection.Get());
+	Sections.Add(ORMSection.Get());
 
 	UMidterialBPLibrary::BuildMasterMaterialSections(MaterialPath, Sections);
+
+	TArray<UObject*> AssetsToSync{};
+	AssetsToSync.Add(StaticLoadObject(UObject::StaticClass(), nullptr, *MaterialPath));
+
+	FContentBrowserModule& ContentBrowserModule = FModuleManager::Get().LoadModuleChecked<FContentBrowserModule>("ContentBrowser");
+	ContentBrowserModule.Get().SyncBrowserToAssets(AssetsToSync);
 
 	return FReply::Handled();
 }
